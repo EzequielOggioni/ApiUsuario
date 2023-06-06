@@ -19,12 +19,12 @@ function conectar(){
 }
 
 
-exports.buscarPersonas = function(){
+exports.buscarPersonas = function(callback){
     conectar();
     conexion.query("select * from usuario", function(err, resultado, filas){
         if(err) throw err;
         console.log(resultado);
-        
+        callback(resultado);
 
     } );
     
@@ -54,15 +54,18 @@ exports.insertarPersona = function(usuario){
 
 
 
-exports.buscarPersona = function(usuario,res){
+exports.buscarPersona = function(usuario,callback){
     conectar();
     var sql = "select * from usuario ";
     sql= sql + "where usuario = '" + usuario.usuario + "'";
     sql= sql + " and  password = '" + md5("clavesupersecreta" + usuario.password) + "' ";
     conexion.query(sql,
      function(err, resultado, filas){
-        if(err) throw err;
-        res.json( resultado);
+        if(err) {
+            res.body= err;
+            res.sendStatus(500);
+         };
+         callback( resultado);
     } );
     
 }
